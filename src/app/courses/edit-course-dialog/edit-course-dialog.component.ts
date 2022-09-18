@@ -1,9 +1,12 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Course} from '../model/course';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {CoursesHttpService} from '../services/courses-http.service';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ICourse } from '../model/course';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../reducers';
+import { Update } from '@ngrx/entity';
+import { courseUpdated } from '../course.action';
 
 @Component({
   selector: 'course-dialog',
@@ -16,17 +19,17 @@ export class EditCourseDialogComponent {
 
   dialogTitle: string;
 
-  course: Course;
+  course: ICourse;
 
   mode: 'create' | 'update';
 
-  loading$:Observable<boolean>;
+  loading$: Observable<boolean>;
 
   constructor(
     private fb: FormBuilder,
+    private store: Store<IAppState>,
     private dialogRef: MatDialogRef<EditCourseDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) data,
-    private coursesService: CoursesHttpService) {
+    @Inject(MAT_DIALOG_DATA) data) {
 
     this.dialogTitle = data.dialogTitle;
     this.course = data.course;
@@ -41,7 +44,7 @@ export class EditCourseDialogComponent {
 
     if (this.mode == 'update') {
       this.form = this.fb.group(formControls);
-      this.form.patchValue({...data.course});
+      this.form.patchValue({ ...data.course });
     }
     else if (this.mode == 'create') {
       this.form = this.fb.group({
@@ -58,16 +61,19 @@ export class EditCourseDialogComponent {
 
   onSave() {
 
-    const course: Course = {
+    const course: ICourse = {
       ...this.course,
       ...this.form.value
     };
 
-    this.coursesService.saveCourse(course.id, course)
-      .subscribe(
-        () => this.dialogRef.close()
-      )
+    const update: Update<ICourse> = {
+      id: course.id,
+      changes: course
+    }
 
+    this.store.dispatch(courseUpdated({ update }));
+
+    this.dialogRef.close();
 
   }
 
