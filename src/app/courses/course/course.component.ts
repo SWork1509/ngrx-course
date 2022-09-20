@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {Course} from '../model/course';
-import {Observable} from 'rxjs';
-import {Lesson} from '../model/lesson';
-import {concatMap, delay, filter, first, map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
-import {CoursesHttpService} from '../services/courses-http.service';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ICourse } from '../model/course';
+import { Observable } from 'rxjs';
+import { Lesson } from '../model/lesson';
+import { concatMap, delay, filter, first, map, shareReplay, tap, withLatestFrom } from 'rxjs/operators';
+import { CoursesHttpService } from '../services/courses-http.service';
 
 
 @Component({
@@ -14,7 +14,7 @@ import {CoursesHttpService} from '../services/courses-http.service';
 })
 export class CourseComponent implements OnInit {
 
-  course$: Observable<Course>;
+  course$: Observable<ICourse>;
 
   lessons$: Observable<Lesson[]>;
 
@@ -42,7 +42,7 @@ export class CourseComponent implements OnInit {
   }
 
 
-  loadLessonsPage(course: Course) {
+  loadLessonsPage(course: ICourse) {
 
   }
 
